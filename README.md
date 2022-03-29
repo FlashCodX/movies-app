@@ -3,6 +3,7 @@
 # ![preview](src/assets/screenshot.png)
 
 A movie App with a search option, pagination and a splashscreen.
+<br/>
 This project was made with react, styled components and typescript.
 
 > Check it out: [https://flashcodx.github.io/movies-app/](https://flashcodx.github.io/movies-app/)
