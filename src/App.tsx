@@ -1,26 +1,63 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import { MoviesComp } from "./Components/Movies/Movies";
+import { Pagination } from "./Components/Pagination/Pagination";
+import { Application } from "./AppStyles";
+import { SearchComponent } from "./Components/Search/SearchComponent";
+import SplashScreen from "./Components/SplashScreen/SplashScreen";
 
-function App() {
+const data = require("./moviedata.json");
+
+export default function App() {
+  const [movies, setMovies] = useState([]);
+  const [filtered, setFiltered] = useState([]);
+  const [filterMode, setFilterMode] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [moviesPerPage] = useState(60);
+
+  /*use effect only gets run at first mount*/
+  useEffect(() => {
+    /*Function to fetch the movies*/
+    const fetchMovies = async () => {
+      setLoading(true);
+      // const res = await fetch("http://localhost:3000/movies");
+      // const jsondata = await res.json();
+      setMovies(data["movies"]);
+      setFiltered(data["movies"]);
+      setLoading(false);
+    };
+    fetchMovies();
+  }, []);
+
+  const paginate = (number: any) => {
+    setCurrentPage(number);
+  };
+
+  const indexOfLastMovie = currentPage * moviesPerPage;
+  const indexofFirstMovie = indexOfLastMovie - moviesPerPage;
+  const currentMovies = movies.slice(indexofFirstMovie, indexOfLastMovie);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Application>
+      <SplashScreen />
+      <SearchComponent
+        setFiltered={setFiltered}
+        movies={movies}
+        setFilterMode={setFilterMode}
+      />
+      <MoviesComp
+        loading={loading}
+        movies={!filterMode ? currentMovies : filtered}
+      />
+
+      {!filterMode ? (
+        <Pagination
+          currentPage={currentPage}
+          moviesPerPage={moviesPerPage}
+          paginate={paginate}
+          totalMovies={movies.length}
+        />
+      ) : null}
+    </Application>
   );
 }
-
-export default App;
